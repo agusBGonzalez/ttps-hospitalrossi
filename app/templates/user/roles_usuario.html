@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Roles del Usuarios{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+  <h1>Roles del usuario: {{ user.username }}</h1>
+  <form action="{{ url_for('user_guardar_roles') }}" method="POST">
+    <input type="hidden" name="id"  value="{{ user.id }}">
+    {% for r in roles %}
+      {% if r in roles_usuario %}
+    <p><label><input type="checkbox" name="id_rol" checked=checked value="{{ r.id }}">{{ r.nombre }}</label></p>
+      {% else %}
+    <p><label><input type="checkbox" name="id_rol" value="{{ r.id }}">{{ r.nombre }}</label></p>
+      {% endif %}
+    {% endfor %}
+    <p>
+      <input type="submit" value="Guardar" class="btn btn-secondary btn-sm">
+      <a href="{{ url_for('user_index') }}" class="btn btn-secondary btn-sm">Volver</a>
+    </p>
+  </form>
+{% endblock %}

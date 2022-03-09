@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if form_action=="delete" %}
+    {%    set titulo_form = "Eliminar Evento VCC" %}
+    {%    set mensaje_del = "Atención: se va a eliminar el evento de tipo VCC" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Eliminar" %}
+    {%    set url_form = url_for('vcc_delete') %}
+{% elif form_action=="new" %}
+    {%    set titulo_form = "Nuevo Evento VCC" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('vcc_create') %}
+{% else %}
+    {%    set titulo_form = "Editar Evento VCC" %}
+    {%    set titulo_del = "" %}
+    {%    set mensaje_del = "" %}
+    {%    set ro = "" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('vcc_modify') %}
+{% endif %}
+{% macro in_select_single(campoEvento, valores, descrip, label='', nullable=1) -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" id="estudioIncompleto"><b>{{ label }}</b></span>
+    <select class="form-select" name="{{campoEvento}}">
+        {% if nullable==1 %}
+        <option value="0" {% if vcc[campoEvento]==None %} selected="selected" {% endif %}> </option>
+        {% endif %}
+        {% for elem in valores  %}
+            <option value="{{ elem.id }}" {% if elem.id == vcc[campoEvento] %} selected="selected" {% endif %}>{{elem[descrip]}}</option>
+        {% endfor %}            
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_select_multi(campoEvento, valores, valores_actuales, descrip_field, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <select class="form-select" name="{{campoEvento}}" id="{{campoEvento}}" multiple>
+        {% for elem in valores %}
+            {% if elem in valores_actuales %}
+            {%  set chk='selected' %}
+            {% else %}
+            {%  set chk='' %}
+            {% endif %}            
+            <option value="{{ elem.id }}" {{chk}}>{{elem[descrip_field]}}</option>
+        {% endfor %}
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_boolean(campoEvento, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <div class="form-check">
+        <label class="form-check-label" >
+        <input  type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="1" {% if vcc[campoEvento] %}checked{% endif %}>
+          Si
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label" >
+        <input type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="0" {% if not vcc[campoEvento] %}checked{% endif %}>
+          No
+        </label>
+      </div>
+</div>
+{%- endmacro %}
+<div>
+    <h1>Cargar datos de VCC</h1>
+    <form action="{{ url_form }}" method="POST" enctype=multipart/form-data>
+    <div class="input-group mb-3">
+        <input type="hidden" name="id_historia" value="{{ vcc.id_historia }}">
+        <input type="hidden" name="id" value="{{ vcc.id }}">
+        <span class="input-group-text bg-background"><b>Fecha:</b></span><input name="fecha" type=date  id="fecha" value="{{ vcc.fecha }}"/>
+    </div>
+    {{ in_select_single('id_operador',operadores,'username', 'Operador', 1 ) }}
+    {{ in_select_single('id_vcc_preparacion',preparaciones,'descripcion', 'Preparacion', 0 ) }}
+    {{ in_select_multi('motivos', motivos, motivos_vcc, 'descripcion', 'Motivo') }}
+
+    <span class="input-group-text bg-background" id="escala-boston"><b>Escala Boston</b></span>
+    <div class="input-group mb-3">
+        <span class="input-group-text bg-background" id="latitudP1"><b>Colon Derecho</b></span>
+        <input type="number" name="boston_der" class="form-control input-forms" value="{{vcc.boston_der}}">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text bg-background" id="latitudP1"><b>colon transverso</b></span>
+        <input type="number" name="boston_trasv" class="form-control input-forms" value="{{vcc.boston_trasv}}">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text bg-background" id="latitudP1"><b>Colon Izquierdo</b></span>
+        <input type="number" name="boston_izq" class="form-control input-forms" value="{{vcc.boston_izq}}">
+    </div>
+
+    {{ in_select_single('id_VCC_incompleta_hasta',incompleta_hasta,'descripcion', 'Incompleta - Hasta', 1) }}
+    {{ in_select_single('id_VCC_incompleta_motivo',incompleta_motivos,'descripcion', 'Incompleta - Motivo', 1) }}
+    {{ in_select_multi('hallazgos', hallazgos, hallazgos_vcc, 'descripcion', 'Hallazgos') }}
+    {{ in_select_multi('terapeuticas', terapeuticas, terapeuticas_vcc, 'descripcion', 'Terapeutica') }}
+    {{ in_select_single('id_VCC_lesion_sospechosa',lesiones_sospechosas,'descripcion', 'Lesion sospechosa', 1) }}
+    {{ in_select_single('id_VCC_polipos_cant',polipos_cant,'descripcion', 'Numero de Polipos', 1) }}
+    {{ in_select_single('id_VCC_polipectomia_tam',polipectomia_tams,'descripcion', 'Tamaño', 1) }}
+    {{ in_select_single('id_VCC_polipectomia_material',polipectomia_materiales,'descripcion', 'Material', 1) }}
+    {{ in_select_single('id_VCC_polipectomia_tecnica',polipectomia_tecnicas,'descripcion', 'Técnica de resección', 1) }}
+    {{ in_select_single('id_VCC_polipectomia_paris',polipectomia_paris,'descripcion', 'Paris', 1) }}
+    {{ in_boolean('ileoscopia', 'Ileoscopia' ) }}
+    {{ in_select_single('id_VCC_de_guardia',de_guardias,'descripcion', 'De Guardia', 1) }}
+    {{ in_select_multi('complicaciones', complicaciones, complicaciones_vcc, 'descripcion', 'Complicaciones') }}
+    {{ in_select_multi('biopsias', biopsias, biopsias_vcc, 'descripcion', 'Biopsia') }}
+    {{ in_select_single('id_VCC_tiempo_ingreso',tiempos_ingreso,'descripcion', 'Tiempo ingreso', 0) }}
+    {{ in_select_single('id_VCC_tiempo_retirada',tiempos_retirada,'descripcion', 'Tiempo Retirada', 0) }}
+    <div class="input-group mb-3">
+        <span class="input-group-text bg-background" id="comentarios"><b>Comentarios</b></span>
+        <input type="text" name="comentarios" class="form-control input-forms" aria-label="Comentarios"
+            aria-describedby="comentarios" value="{{ vcc.comentarios }}" required>
+    </div>
+    <input type="submit" class="btn btn-secondary btn-sm" value="{{lbl_boton}}">
+    <a href="{{ url_for('historia_edit',id=vcc.id_historia) }}" class="btn btn-secondary btn-sm">Volver</a>
+    </form>
+</div>
+{% endblock %}

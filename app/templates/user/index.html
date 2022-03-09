@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+  <h3>Usuarios</h3>
+  <form action="{{ url_for('user_browse') }}" method="POST">
+    <p>
+      <label>Username</label>
+      {% if busqueda is defined %}
+      <input name="busca_username" placeholder="Username" value="{{ busqueda }}"/>  
+      {% else %}
+      <input name="busca_username" placeholder="Username"/>
+      {% endif %}
+      <select name="activos" id="activos">
+        <option value="A" {% if activos=="A" %} selected="selected" {% endif %}>Activos</option>
+        <option value="I" {% if activos=="I" %} selected="selected" {% endif %}>Inactivos</option>
+        <option value="T" {% if activos=="T" %} selected="selected" {% endif %}>Todos</option>
+      </select>
+      <input type="submit" class="btn btn-secondary btn-sm" value="buscar">
+    </p>
+  </form>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-3" style="background-color:LightGray;">
+        <p>Usuario</p>
+      </div>
+      <div class="col-sm-4" style="background-color:LightGray;">
+        <p>Apellido y Nombre</p>
+      </div>
+      <div class="col-sm-3" style="background-color:LightGray;">
+        <p>Email</p>
+      </div>                  
+      <div class="col-sm-2" style="background-color:LightGray;">
+        
+      </div>
+
+    </div>
+    <div class="row">
+    {% for user in users %}
+      <div class="col-sm-3" style="background-color:whitesmoke;">
+        <p>{{ user.username }}</p>
+      </div>
+      <div class="col-sm-4" style="background-color:whitesmoke;">
+        <p>{{ user.last_name }}, {{ user.first_name }}</p>
+      </div>
+      <div class="col-sm-3" style="background-color:whitesmoke;">
+        <p>{{ user.email }}</p>
+      </div>                  
+      <div class="col-sm-2" style="background-color:whitesmoke;">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Acciones
+          </button>
+          <div class="dropdown-menu" >
+            <a class="dropdown-item" href="{{ url_for('user_edit', id=user.id) }}">Editar</a>
+            <a class="dropdown-item" href="{{ url_for('user_roles', id=user.id)  }}">Roles</a>
+            <a class="dropdown-item" href="{{ url_for('user_delete_confirma', id=user.id) }}">Eliminar</a>
+          </div>
+        </div>    
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+  <p>
+  {% if (previa != 0) %}
+    <a href="{{ url_for('user_pagina', pagina=previa ) }}" class="btn btn-primary btn-sm">Prev</a>
+  {% endif %}
+  {% if (proxima != 0) %}
+    <a href="{{ url_for('user_pagina', pagina=proxima ) }}" class="btn btn-primary btn-sm">Prox</a>
+  {% endif %}
+  </p>
+  <a href="{{ url_for('user_new') }}" class="btn btn-secondary btn-sm">Nuevo</a>
+{% endblock %}

@@ -1,0 +1,293 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if modo=="form" %}
+<div class="conteiner">
+    <h1> Historia clínica del paciente {{historia.nombre}} entre fechas</h1>
+    <form action="{{ url_for('repo_historiaPeriodo') }}" method="POST" enctype=multipart/form-data>
+        <input name="desde" type=date  id="desde" value="{{desde}}" />
+        <input name="hasta" type=date  id="hasta" value="{{hasta}}" />
+        <input type="hidden" name="id_historia" value="{{ historia.id }}">
+        <input type="submit" class="btn btn-secondary btn-sm" value="Generar">
+        <a href="{{ url_for('historia_edit',id=historia.id ) }}" class="btn btn-secondary btn-sm">Volver</a>
+    </form>
+    
+</div>
+{% endif %}
+{% if modo=="reporte" %}
+<div class="conteiner" id="mainDiv">
+    
+    <h1> Historia clínica del paciente {{nombre}} entre fechas</h1>
+    <table class="table table-striped " id="encabezado">
+    <tr>
+        <td>Nombre: </td><td>{{historia.nombre}}</td>
+    </tr>
+    <tr>
+        <td>Nacimiento: </td><td>{{historia.nacimiento}}</td>
+    </tr>
+    <tr>
+        <td>Edad: </td><td>{{historia.edad}}</td>
+    </tr>
+    <tr>
+        <td>Sexo: </td><td>{{historia.sexo.descripcion}}</td>
+    </tr>
+    </table>
+    {% for evento in eventos  %}    
+    {% if evento.tipoEv=="VCC" %}
+    <table class="table table-striped " >
+        <thead>
+            <tr>
+                <th>Fecha VCC</th>
+                <th>Nombre</th>
+                <th>Fecha Nacimiento</th>
+                <th>Edad</th>
+                <th>Comentarios</th>
+                <th>de guardia</th>
+                <th>Incompleto - hasta</th>
+                <th>Incompleta - motivo</th>
+                <th>Lesion sospechosa</th>
+                <th>Polipectomia - material</th>
+                <th>Polipectomia - Paris</th>
+                <th>Polipectomia - tam</th>
+                <th>Polipectomia - tecnica</th>
+                <th>Cant- Pólipos</th>
+                <th>Preparación</th>
+                <th>Tiempo ingreso</th>
+                <th>Tiempo retirada</th>
+                <th>Biopsias</th>
+                <th>Complicaciones</th>
+                <th>Hallazgos</th>
+                <th>Motivo</th>
+                <th>Terapéutica</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.nombre}}</td>
+                <td>{{evento.nacimiento}}</td>
+                <td>{{evento.edad}}</td>
+                <td>{{evento.comentarios}}</td>
+                <td>{{evento.vcc_de_guardia}}</td>
+                <td>{{evento.vcc_incompleta_hasta}}</td>
+                <td>{{evento.vcc_incompleta_motivo}}</td>
+                <td>{{evento.vcc_lesion_sospechosa}}</td>
+                <td>{{evento.vcc_polipectomia_material}}</td>
+                <td>{{evento.vcc_polipectomia_paris}}</td>
+                <td>{{evento.vcc_polipectomia_tam}}</td>
+                <td>{{evento.vcc_polipectomia_tecnica}}</td>
+                <td>{{evento.vcc_polipos_cant}}</td>
+                <td>{{evento.vcc_preparacion}}</td>
+                <td>{{evento.vcc_tiempo_ingreso}}</td>
+                <td>{{evento.vcc_tiempo_retirada}}</td>
+                <td>{{evento.biopsias}}</td>
+                <td>{{evento.complicaciones}}</td>
+                <td>{{evento.hallazgos}}</td>
+                <td>{{evento.motivo}}</td>
+                <td>{{evento.terapeutica}}</td>
+            </tr>
+        </tbody>
+    </table>    
+    {% elif evento.tipoEv=="VEDA" %}
+    <table class="table table-striped " >
+        <thead>
+            <tr>
+                <th>Fecha VEDA</th>
+                <th>Nombre</th>
+                <th>Fecha Nacimiento</th>
+                <th>Edad</th>
+                <th>veda_biopsia</th>
+                <th>veda_de_guardia</th>
+                <th>veda_hallazgo</th>
+                <th>veda_incompleto</th>
+                <th>veda_motivo</th>
+                <th>veda_polipectomia_material</th>
+                <th>veda_polipectomia_paris</th>
+                <th>veda_polipectomia_tam</th>
+                <th>veda_protocolo</th>
+                <th>veda_terapeutica</th>
+                <th>veda_tiempo</th>
+                <th>hallazgo</th>
+                <th>motivo</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.nombre}}</td>
+                <td>{{evento.nacimiento}}</td>
+                <td>{{evento.edad}}</td>
+                <td>{{evento.veda_biopsia}}</td>
+                <td>{{evento.veda_de_guardia}}</td>
+                <td>{{evento.veda_hallazgo}}</td>
+                <td>{{evento.veda_incompleto}}</td>
+                <td>{{evento.veda_motivo}}</td>
+                <td>{{evento.veda_polipectomia_material}}</td>
+                <td>{{evento.veda_polipectomia_paris}}</td>
+                <td>{{evento.veda_polipectomia_tam}}</td>
+                <td>{{evento.veda_protocolo}}</td>
+                <td>{{evento.veda_terapeutica}}</td>
+                <td>{{evento.veda_tiempo}}</td>
+                <td>{{evento.hallazgo}}</td>
+                <td>{{evento.motivo}}</td>
+            </tr>
+        </tbody>
+    </table>    
+    {% elif evento.tipoEv=="CPRE" %}
+    <table class="table table-striped " id="mainTable">
+        <thead>
+            <tr>
+                <th>Fecha CPRE</th>
+                <th>Nombre</th>
+                <th>Fecha Nacimiento</th>
+                <th>Edad</th>
+                <th>fecha</th>
+                <th>nombre</th>
+                <th>nacimiento</th>
+                <th>edad</th>
+                <th>ASA</th>
+                <th>ambulatorio</th>
+                <th>cpre_previa</th>
+                <th>BILIRRUBINA</th>
+                <th>FAL</th>
+                <th>TGP</th>
+                <th>TGO</th>
+                <th>AMILASA</th>
+                <th>GGT</th>
+                <th>GB</th>
+                <th>FR_DE_PA_SOD</th>
+                <th>FR_DE_PA_AUSENCIA_PC</th>
+                <th>FR_DE_PA_ANTEC_PA</th>
+                <th>CPRE_normal</th>
+                <th>ESFINTEROPLASTIA</th>
+                <th>stent_duodenal</th>
+                <th>RX_dosis</th>
+                <th>DPA</th>
+                <th>RX_tiempo</th>
+                <th>nro_sesiones</th>
+                <th>resolucion_completa</th>
+                <th>canulacion</th>
+                <th>biopsias</th>
+                <th>citologia</th>
+                <th>fracaso</th>
+                <th>comentarios</th>
+                <th>embarazo</th>
+                <th>fecha</th>
+                <th>hospital_derivacion</th>
+                <th>CPRE_WIRSUNG</th>
+                <th>CPRE_PRECORTE</th>
+                <th>CPRE_Dilatacion_biliar</th>
+                <th>CPRE_Litotripsia</th>
+                <th>CPRE_stent_plastico</th>
+                <th>CPRE_stent_autoex</th>
+                <th>cirugia_prev</th>
+                <th>coledocolitiasis</th>
+                <th>complicaciones</th>
+                <th>diverticulo</th>
+                <th>eco_abd</th>
+                <th>estenosis_alta</th>
+                <th>estenosis_baja</th>
+                <th>eus</th>
+                <th>grado_asge</th>
+                <th>grado_dif</th>
+                <th>indicacion</th>
+                <th>indicacion_asge</th>
+                <th>indicacion_ept</th>
+                <th>lpqvb</th>
+                <th>miscelaneas</th>
+                <th>profilaxis_atb</th>
+                <th>resolucion_complica</th>
+                <th>rnm</th>
+                <th>tac</th>
+                <th>terap_pancreas</th>
+                <th>transk</th>
+
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.nombre}}</td>
+                <td>{{evento.nacimiento}}</td>
+                <td>{{evento.edad}}</td>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.nombre}}</td>
+                <td>{{evento.nacimiento}}</td>
+                <td>{{evento.edad}}</td>
+                <td>{{evento.ASA}}</td>
+                <td>{{evento.ambulatorio}}</td>
+                <td>{{evento.cpre_previa}}</td>
+                <td>{{evento.BILIRRUBINA}}</td>
+                <td>{{evento.FAL}}</td>
+                <td>{{evento.TGP}}</td>
+                <td>{{evento.TGO}}</td>
+                <td>{{evento.AMILASA}}</td>
+                <td>{{evento.GGT}}</td>
+                <td>{{evento.GB}}</td>
+                <td>{{evento.FR_DE_PA_SOD}}</td>
+                <td>{{evento.FR_DE_PA_AUSENCIA_PC}}</td>
+                <td>{{evento.FR_DE_PA_ANTEC_PA}}</td>
+                <td>{{evento.CPRE_normal}}</td>
+                <td>{{evento.ESFINTEROPLASTIA}}</td>
+                <td>{{evento.stent_duodenal}}</td>
+                <td>{{evento.RX_dosis}}</td>
+                <td>{{evento.DPA}}</td>
+                <td>{{evento.RX_tiempo}}</td>
+                <td>{{evento.nro_sesiones}}</td>
+                <td>{{evento.resolucion_completa}}</td>
+                <td>{{evento.canulacion}}</td>
+                <td>{{evento.biopsias}}</td>
+                <td>{{evento.citologia}}</td>
+                <td>{{evento.fracaso}}</td>
+                <td>{{evento.comentarios}}</td>
+                <td>{{evento.embarazo}}</td>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.hospital_derivacion}}</td>
+                <td>{{evento.CPRE_WIRSUNG}}</td>
+                <td>{{evento.CPRE_PRECORTE}}</td>
+                <td>{{evento.CPRE_Dilatacion_biliar}}</td>
+                <td>{{evento.CPRE_Litotripsia}}</td>
+                <td>{{evento.CPRE_stent_plastico}}</td>
+                <td>{{evento.CPRE_stent_autoex}}</td>
+                <td>{{evento.cirugia_prev}}</td>
+                <td>{{evento.coledocolitiasis}}</td>
+                <td>{{evento.complicaciones}}</td>
+                <td>{{evento.diverticulo}}</td>
+                <td>{{evento.eco_abd}}</td>
+                <td>{{evento.estenosis_alta}}</td>
+                <td>{{evento.estenosis_baja}}</td>
+                <td>{{evento.eus}}</td>
+                <td>{{evento.grado_asge}}</td>
+                <td>{{evento.grado_dif}}</td>
+                <td>{{evento.indicacion}}</td>
+                <td>{{evento.indicacion_asge}}</td>
+                <td>{{evento.indicacion_ept}}</td>
+                <td>{{evento.lpqvb}}</td>
+                <td>{{evento.miscelaneas}}</td>
+                <td>{{evento.profilaxis_atb}}</td>
+                <td>{{evento.resolucion_complica}}</td>
+                <td>{{evento.rnm}}</td>
+                <td>{{evento.tac}}</td>
+                <td>{{evento.terap_pancreas}}</td>
+                <td>{{evento.transk}}</td>
+            </tr>
+        </tbody>
+    </table>    
+    {% endif %}
+    <table><tr><td></td></tr></table>
+    {% endfor %} 
+    <a id="downloadLink" class="btn btn-secondary btn-sm active" onclick="exportF(this,'mainDiv', 'Historia Clinica' )">Exportar Excel</a>
+    <a href="{{ url_for('historia_edit',id=historia.id ) }}" class="btn btn-secondary btn-sm">Volver</a>
+</div>
+<script>
+    function exportF(elem, tableId, xlsName) {
+     var table = document.getElementById(tableId);
+     var html = table.outerHTML;
+     var url = 'data:application/vnd.ms-excel,' + escape(html);
+     elem.setAttribute("href", url);
+     elem.setAttribute("download", xlsName);
+     return false;
+   }
+</script>
+{% endif %}
+{% endblock %}

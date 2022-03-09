@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}Configuración{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+  <h1>Configuración del Sistema</h1>
+  <form action="{{ url_for('config_edit') }}" method="POST">
+    <div class="form-group">
+      <label for="titPagPpal"><b>Título página principal</b></label>
+      <input type="text" id="titPagPpal" name="titPagPpal" placeholder="Ingrese título para la página principal" required
+        value="{{ request.form['titPagPpal'] or confsist['titulo_pagina_principal'] }}" class="form-control"
+        maxlength="255">
+    </div>
+    <div class="form-group">
+      <label for="desSitio"><b>Descripción del sitio</b></label>
+      <input type="text" id="desSitio" name="desSitio" placeholder="Ingrese descripción del sitio" required
+        value="{{ request.form['desSitio'] or confsist['descripcion_sitio'] }}" class="form-control"
+        maxlength="2000">
+    </div>
+    <div class="form-group">
+      <label for="mailContacto"><b>Mail de contacto</b></label>
+      <input type="email" id="mailContacto" name="mailContacto" placeholder="Ingrese mail de contacto para el sitio" required
+        value="{{ request.form['mailContacto'] or confsist['email_contacto'] }}" class="form-control"
+        maxlength="100">
+    </div>
+    <div class="form-group">
+      <label for="elemPagina"><b>Cantidad de elementos por página</b></label>
+      <input type="number" id="elemPagina" name="elemPagina" placeholder="Ingrese la cantidad de elementos a visualizar por página" 
+        value="{{ request.form['elemPagina'] or confsist['cantidad_registros_x_pagina'] }}" class="form-control"
+        min="1" max="3000" required>
+    </div>
+    <p>
+      <label for="sitioOn"><b>¿Sitio habilitado?</b></label>
+      <input type="checkbox" id="sitioOn" name="sitioOn" {% if confsist.sitio_habilitado == True %} checked {% endif %}>
+    </p>
+    <div class="form-group">
+      <label for="msjSitioOff"><b>Mensaje para sitio deshabilitado</b></label>
+      <input type="text" id="msjSitioOff" name="msjSitioOff" placeholder="Ingrese un mensaje para mostrar cuando el sitio se encuentre deshabilitado"
+      value="{{ request.form['msjSitioOff'] or confsist['mensaje_sitio_deshabilitado'] }}" class="form-control" maxlength="255">
+    </div>
+    <p>
+      <input type="submit" class="btn btn-primary btn-sm" value="Guardar">
+      <input type="reset" class="btn btn-secondary btn-sm" value="Limpiar">
+      <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm">Cerrar</a>
+    </p>
+  </form>
+{% endblock %}

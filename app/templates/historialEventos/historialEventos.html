@@ -1,0 +1,123 @@
+{% extends "layout.html" %} {% block title %}Usuarios{% endblock %} {% block head %} {{ super() }} {% endblock %} {% block content %}
+{% if form_action=="delete" %}
+    {%    set titulo_form = "Eliminar Historia Clínica" %}
+    {%    set mensaje_del = "Atención: se va a eliminar la historia clinica" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Eliminar" %}
+    {%    set url_form = url_for('historia_delete') %}
+{% elif form_action=="new" %}
+    {%    set titulo_form = "Nueva Historia Clínica" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('historia_create') %}
+{% else %}
+    {%    set titulo_form = "Editar Historia Clinica" %}
+    {%    set titulo_del = "" %}
+    {%    set mensaje_del = "" %}
+    {%    set ro = "" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('historia_modify') %}
+{% endif %}
+<div>
+    <form action="{{ url_form }}" method="POST" enctype=multipart/form-data>
+        <h1>Historia clinica del paciente</h1>
+        <input type="hidden" name="id" value="{{ historia.id }}">
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-background" id="nombre"><b>Nombre y apellido</b></span>
+            <input type="text" id="nombre" name="nombre" class="form-control input-forms" aria-label="Nombre" aria-describedby="nombre" value="{{historia.nombre}}" required>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-background"><b>Nacimiento:</b></span><input name="nacimiento" type=date  name="nacimiento" id="nacimiento" value="{{ historia.nacimiento }}"/>
+            <span class="input-group-text bg-background"><b>Edad : {{historia.edad}} años</b></span>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-background"><b>Sexo</b></span>
+            <select name="id_sexo" class="form-select" id="id_sexo" >
+            {% for sexo in sexos %}
+                <option value="{{ sexo.id }}" {% if sexo.id == historia.id_sexo %} selected="selected" {% endif %}>{{sexo.descripcion}}</option>
+            {% endfor %}
+            </select>
+        </div>        
+
+        <div class="input-group mb-3">
+            <span class="input-group-text bg-background"><b>DNI</b></span>
+            <input type="number" name="dni" id="dni" value="{{historia.dni}}" class="form-control input-forms" aria-label="dni" aria-describedby="dni" required>
+        </div>
+        <input type="submit" class="btn btn-secondary btn-sm" value="{{lbl_boton}}">
+        <a href="{{ url_for('historia_index') }}" class="btn btn-secondary btn-sm">Volver</a>
+    </form>
+</div>
+<br />
+{% if form_action!="new" %}
+<div>
+    <div class="d-flex justify-content-between">
+        <h1>Historial de eventos</h1>
+
+        <div>
+            <a href="{{ url_for('repo_historiaPeriodo_form',id=historia.id) }}" class="btn btn-secondary btn-sm " >
+                reporte
+            </a>
+            <div class="btn-group" role="group">
+
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Agregar Eventos
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('vcc_new',id_historia=historia.id) }}" class="dropdown-item">Cargar VCC</a>
+                    <a href="{{ url_for('veda_new',id_historia=historia.id) }}" class="dropdown-item">Cargar VEDA</a>
+                    <a href="{{ url_for('cpre_new',id_historia=historia.id) }}" class="dropdown-item">Cargar CPRE</a>
+                    <a href="{{ url_for('hepa_new',id_historia=historia.id) }}" class="dropdown-item">Cargar HEPATICO</a>
+                </div>
+            </div>
+            <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#agregarEventoModal" > eventos</button> -->
+        </div>
+    </div>
+    <table class="table table-striped ">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}    
+            <tr>
+                <td> {{ evento.fecha.strftime('%d/%m/%Y') }} </td>
+                <td> {{ evento.tipo }} </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Acciones
+                        </button>
+                        <div class="dropdown-menu">
+                            {% if evento.tipo=="VCC" %}
+                            <a class="dropdown-item" href="{{ url_for('vcc_edit',id=evento.id) }}">Editar</a>
+                            {% elif evento.tipo=="VEDA" %}
+                            <a class="dropdown-item" href="{{ url_for('veda_edit',id=evento.id) }}">Editar</a>
+                            {% elif evento.tipo=="CPRE" %}
+                            <a class="dropdown-item" href="{{ url_for('cpre_edit',id=evento.id) }}">Editar</a>
+                            {% elif evento.tipo=="HEPA" %}
+                            <a class="dropdown-item" href="{{ url_for('hepa_edit',id=evento.id) }}">Editar</a>
+                            {% endif %}                            
+                            {% if evento.tipo=="VCC" %}
+                            <a class="dropdown-item" href="{{ url_for('vcc_delete_confirma',id=evento.id) }}">Eliminar</a>
+                            {% elif evento.tipo=="VEDA" %}
+                            <a class="dropdown-item" href="{{ url_for('veda_delete_confirma',id=evento.id) }}">Eliminar</a>
+                            {% elif evento.tipo=="CPRE" %}
+                            <a class="dropdown-item" href="{{ url_for('cpre_delete_confirma',id=evento.id) }}">Eliminar</a>
+                            {% elif evento.tipo=="HEPA" %}
+                            <a class="dropdown-item" href="{{ url_for('hepa_delete_confirma',id=evento.id) }}">Eliminar</a>
+                            {% endif %}                            
+
+                        </div>
+                    </div>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

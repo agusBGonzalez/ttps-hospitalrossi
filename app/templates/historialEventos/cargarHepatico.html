@@ -1,0 +1,185 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+
+{% if form_action=="delete" %}
+{% set titulo_form = "Eliminar Evento HEPA" %}
+{% set mensaje_del = "Atención: se va a eliminar la historia clinica" %}
+{% set ro = "readonly" %}
+{% set lbl_boton = "Eliminar" %}
+{% set url_form = url_for('hepa_delete') %}
+{% elif form_action=="new" %}
+{% set titulo_form = "Nuevo Evento HEPA" %}
+{% set ro = "readonly" %}
+{% set lbl_boton = "Guardar" %}
+{% set url_form = url_for('hepa_create') %}
+{% else %}
+{% set titulo_form = "Editar Evento HEPA" %}
+{% set titulo_del = "" %}
+{% set mensaje_del = "" %}
+{% set ro = "" %}
+{% set lbl_boton = "Guardar" %}
+{% set url_form = url_for('hepa_modify') %}
+{% endif %}
+
+{% macro in_select_single(campoEvento, valores, descrip, label='', nullable=1) -%}
+<div class="input-group mb-3">
+  <span class="input-group-text bg-background" id="estudioIncompleto"><b>{{ label }}</b></span>
+  <select class="form-select" name="{{campoEvento}}">
+    {% if nullable==1 %}
+    <option value="0" {% if hepa[campoEvento]==None %} selected="selected" {% endif %}> </option>
+    {% endif %}
+    {% for elem in valores %}
+    <option value="{{ elem.id }}" {% if elem.id==hepa[campoEvento] %} selected="selected" {% endif %}>{{elem[descrip]}}
+    </option>
+    {% endfor %}
+  </select>
+</div>
+{%- endmacro %}
+{% macro in_select_multi(campoEvento, valores, valores_actuales, descrip_field, label='') -%}
+<div class="input-group mb-3">
+  <span class="input-group-text bg-background"><b>{{label}}</b></span>
+  <select class="form-select" name="{{campoEvento}}" id="{{campoEvento}}" multiple>
+    {% for elem in valores %}
+    {% if elem in valores_actuales %}
+    {% set chk='selected' %}
+    {% else %}
+    {% set chk='' %}
+    {% endif %}
+    <option value="{{ elem.id }}" {{chk}}>{{elem[descrip_field]}}</option>
+    {% endfor %}
+  </select>
+</div>
+{%- endmacro %}
+{% macro in_boolean(campoEvento, label='') -%}
+<div class="input-group mb-3">
+  <span class="input-group-text bg-background"><b>{{label}}</b></span>
+  <div class="form-check">
+    <label class="form-check-label">
+      <input type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="1" {% if hepa[campoEvento] %}checked{%
+        endif %}>
+      Si
+    </label>
+  </div>
+  <div class="form-check">
+    <label class="form-check-label">
+      <input type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="0" {% if not hepa[campoEvento] %}checked{%
+        endif %}>
+      No
+    </label>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro in_int(campoEvento, label='', required=0, max=99999999, min=-99999) -%}
+{% if required==1 %}
+{%    set req = 'required' %}
+{% else %}
+{%    set req = '' %}
+{% endif %}
+{% set valor = hepa[campoEvento] %}
+{% if valor == None %}
+{% set valor = '' %}
+{% endif %}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <input type="number" name="{{campoEvento}}" class="form-control input-forms" value="{{valor}}" {{req}} min={{min}} max={{max}}>
+</div>
+{%- endmacro %}
+
+<div>
+  <h1>{{titulo_form}}</h1>
+  <form action="{{ url_form }}" method="POST" enctype=multipart/form-data>
+    <div class="input-group mb-3">
+      <input type="hidden" name="id_historia" value="{{ hepa.id_historia }}">
+      <input type="hidden" name="id" value="{{ hepa.id }}">
+      <span class="input-group-text bg-background"><b>Fecha:</b></span><input name="fecha" type=date id="fecha"
+        value="{{ hepa.fecha }}" />
+    </div>
+    {{ in_select_single('id_operador',operadores,'username', 'Operador' ) }}
+
+    <div class="input-group mb-3">
+      <span class="input-group-text bg-background" id="consultorio"><b>¿Consultorio?</b></span>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" value="1" name="consultorio" id="consultorioSI">
+        <label class="form-check-label" for="consultorioSI">
+          Si
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" value="0" name="consultorio" id="consultorioNO">
+        <label class="form-check-label" for="consultorioNO">
+          No
+        </label>
+      </div>
+    </div>
+
+    <div class="input-group mb-3" id="etiologias" hidden>
+
+      {{ in_select_multi('etiologias', etiologia, Hepa_Etiologia, 'descripcion', 'etiologias') }}
+    </div>
+    <div class="input-group mb-3" id="descompensacion" hidden>
+      {{ in_select_single('id_HEPA_descompensacion',descompensacion,'descripcion', ' Motivo de descompensacion' ) }}
+    </div>
+    <div class="input-group mb-3" id="cirrosis-etiologia" hidden>
+      {{ in_select_multi('cirrosis_etiologias', cirrosis_etiologia, Hepa_Cirrosis_Etiologia, 'descripcion', 'cirrosis-etiologia') }}
+
+    </div>
+    {{ in_boolean('hepatocarcinoma', 'hepatocarcinoma' ) }}
+    {{ in_boolean('lesion_focal_hepatica', "lesion_focal_hepatica")}}
+
+    {{ in_int(campoEvento='meld', label='meld', required=0, min=5, max=40) }}
+    
+    {{ in_select_single('id_HEPA_child_pugh',child_pugh,'descripcion', 'child_pugh' ) }}
+
+
+    <input type="submit" class="btn btn-secondary btn-sm" value="{{lbl_boton}}">
+    <a href="{{ url_for('historia_edit',id=hepa.id_historia) }}" class="btn btn-secondary btn-sm">Volver</a>
+  </form>
+</div>
+{% endblock %}
+{% block footer %}
+<script>
+  // Mostrar etiologias si marca si
+  var etiologias = document.getElementById('etiologias');
+  // evento para el input radio del "si"
+  document.getElementById('consultorioSI').addEventListener('click', function (e) {
+    console.log('Vamos a habilitar el div');
+    etiologias.hidden = false;
+  });
+  // evento para el input radio del "no"
+  document.getElementById('consultorioNO').addEventListener('click', function (e) {
+    console.log('Vamos a deshabilitar el input div');
+    etiologias.hidden = true;
+  });
+
+  // mostrar descompensacion si marca no
+  var descompensacion = document.getElementById('descompensacion');
+  // evento para el input radio del "si"
+  document.getElementById('consultorioSI').addEventListener('click', function (e) {
+    console.log('Vamos a habilitar el div');
+    descompensacion.hidden = true;
+  });
+  // evento para el input radio del "no"
+  document.getElementById('consultorioNO').addEventListener('click', function (e) {
+    console.log('Vamos a deshabilitar el div');
+    descompensacion.hidden = false;
+  });
+
+  // mostrar cirrosis-etiologia si marca no
+  var cirrosisEtiologia = document.getElementById('cirrosis-etiologia');
+  // evento para el input radio del "si"
+  document.getElementById('consultorioSI').addEventListener('click', function (e) {
+    console.log('Vamos a habilitar el div');
+    cirrosisEtiologia.hidden = true;
+  });
+  // evento para el input radio del "no"
+  document.getElementById('consultorioNO').addEventListener('click', function (e) {
+    console.log('Vamos a deshabilitar el div');
+    cirrosisEtiologia.hidden = false;
+  });
+</script>
+{% endblock %}

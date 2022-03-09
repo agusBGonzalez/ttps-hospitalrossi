@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if form_action=="delete" %}
+    {%    set titulo_form = "Eliminar Evento VEDA" %}
+    {%    set mensaje_del = "Atención: se va a eliminar el evento de tipo VEDA" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Eliminar" %}
+    {%    set url_form = url_for('veda_delete') %}
+{% elif form_action=="new" %}
+    {%    set titulo_form = "Nuevo Evento VEDA" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('veda_create') %}
+{% else %}
+    {%    set titulo_form = "Editar Evento VEDA" %}
+    {%    set titulo_del = "" %}
+    {%    set mensaje_del = "" %}
+    {%    set ro = "" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('veda_modify') %}
+{% endif %}
+{% macro in_select_single(campoEvento, valores, descrip, label='', nullable=1) -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" id="estudioIncompleto"><b>{{ label }}</b></span>
+    <select class="form-select" name="{{campoEvento}}">
+        {% if nullable==1 %}
+        <option value="0" {% if veda[campoEvento]==None %} selected="selected" {% endif %}> </option>
+        {% endif %}
+        {% for elem in valores  %}
+            <option value="{{ elem.id }}" {% if elem.id == veda[campoEvento] %} selected="selected" {% endif %}>{{elem[descrip]}}</option>
+        {% endfor %}            
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_select_multi(campoEvento, valores, valores_actuales, descrip_field, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <select class="form-select" name="{{campoEvento}}" id="{{campoEvento}}" multiple>
+        {% for elem in valores %}
+            {% if elem in valores_actuales %}
+            {%  set chk='selected' %}
+            {% else %}
+            {%  set chk='' %}
+            {% endif %}            
+            <option value="{{ elem.id }}" {{chk}}>{{elem[descrip_field]}}</option>
+        {% endfor %}
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_boolean(campoEvento, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <div class="form-check">
+        <label class="form-check-label" >
+        <input  type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="1" {% if veda[campoEvento] %}checked{% endif %}>
+          Si
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label" >
+        <input type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="0" {% if not veda[campoEvento] %}checked{% endif %}>
+          No
+        </label>
+      </div>
+</div>
+{%- endmacro %}
+<div>
+    <h1>{{titulo_form}}</h1>
+    <form action="{{ url_form }}" method="POST" enctype=multipart/form-data>
+    <div class="input-group mb-3">
+        <input type="hidden" name="id_historia" value="{{ veda.id_historia }}">
+        <input type="hidden" name="id" value="{{ veda.id }}">
+        <span class="input-group-text bg-background"><b>Fecha:</b></span><input name="fecha" type=date  id="fecha" value="{{ veda.fecha }}"/>
+    </div>
+    {{ in_select_single('id_operador',operadores,'username', 'Operador' ) }}
+    {{ in_boolean('anestesia', 'Se uso anestesia' ) }}
+    {{ in_select_single('id_VEDA_incompleto',incompletos,'descripcion', 'Estudio incompleto' ) }}
+    {{ in_select_multi('motivos', motivos, motivos_veda, 'descripcion', 'Motivo') }}
+    {{ in_select_single('id_VEDA_terapeutica ',terapeuticas,'descripcion','Terapeutica' ) }}
+    <h4>Polipectomía</h4>
+    {{ in_select_single('id_VEDA_polipectomia_tam',polipectomia_tams,'descripcion','Tamaño' ) }}
+    {{ in_select_single('id_VEDA_polipectomia_material',polipectomia_materiales,'descripcion','Material' ) }}
+    {{ in_select_single('id_VEDA_polipectomia_paris',polipectomia_paris,'descripcion','Paris' ) }}
+    <h4>------------------------------------------------</h4>
+
+    {{ in_select_multi('hallazgos', hallazgos, hallazgos_veda, 'descripcion', 'Hallazgos') }}
+    {{ in_select_single('id_VEDA_biopsia',biopsias,'descripcion','Biopsia' ) }}
+    {{ in_select_single('id_VEDA_de_guardia',de_guardias,'descripcion','De Guardia' ) }}
+    {{ in_select_single('id_VEDA_protocolo',protocolos,'descripcion','Protocolo' ) }}
+    {{ in_select_single('id_VEDA_tiempo',tiempos,'descripcion','Tiempo', 0 ) }}
+
+    <div class="input-group mb-3">
+        <span class="input-group-text bg-background"><b>Comentarios</b></span>
+        <input type="text" name="comentarios" class="form-control input-forms" aria-label="Comentarios"
+            aria-describedby="comentarios" value="{{ veda.comentarios }}" required>
+    </div>
+    <input type="submit" class="btn btn-secondary btn-sm" value="{{lbl_boton}}">
+    <a href="{{ url_for('historia_edit',id=veda.id_historia) }}" class="btn btn-secondary btn-sm">Volver</a>
+    </form>
+</div>
+{% endblock %}

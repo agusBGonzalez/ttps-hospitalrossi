@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if modo=="form" %}
+<div class="conteiner">
+    <div class="container justify-content-center d-flex">
+        <div class="card-body p-5 text-center col-md-8">
+            <div class="mb-md-5 mt-md-6">
+                <h1 class="h-100"> Reporte completo CPRE</h1>
+                <form action="{{ url_for('repo_cpreCompleto') }}" method="POST" enctype=multipart/form-data>
+                    <div class="form-outline form-white mb-6">
+                        <input  class="form-control" name="desde" type=date id="desde" value="{{desde}}" />
+                    </div>
+                    <div class="form-outline form-white mb-6">
+                        <input  class="form-control" name="hasta" type=date id="hasta" value="{{hasta}}" />
+                    </div>
+                    <input class="btn btn-primary ms-1" type="submit" value="Generar">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if modo=="reporte" %}
+<div class="conteiner">
+    <h1> Reporte completo de CPRE</h1>
+    <div class="table-responsive">
+        <table class="table table-striped" id="mainTable">
+            <thead>
+                <tr>
+                    <th>Fecha CPRE</th>
+                    <th>Nombre</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Edad</th>
+                    <th>fecha</th>
+                    <th>nombre</th>
+                    <th>nacimiento</th>
+                    <th>edad</th>
+                    <th>ASA</th>
+                    <th>ambulatorio</th>
+                    <th>cpre_previa</th>
+                    <th>BILIRRUBINA</th>
+                    <th>FAL</th>
+                    <th>TGP</th>
+                    <th>TGO</th>
+                    <th>AMILASA</th>
+                    <th>GGT</th>
+                    <th>GB</th>
+                    <th>FR_DE_PA_SOD</th>
+                    <th>FR_DE_PA_AUSENCIA_PC</th>
+                    <th>FR_DE_PA_ANTEC_PA</th>
+                    <th>CPRE_normal</th>
+                    <th>ESFINTEROPLASTIA</th>
+                    <th>stent_duodenal</th>
+                    <th>RX_dosis</th>
+                    <th>DPA</th>
+                    <th>RX_tiempo</th>
+                    <th>nro_sesiones</th>
+                    <th>resolucion_completa</th>
+                    <th>canulacion</th>
+                    <th>biopsias</th>
+                    <th>citologia</th>
+                    <th>fracaso</th>
+                    <th>comentarios</th>
+                    <th>embarazo</th>
+                    <th>fecha</th>
+                    <th>hospital_derivacion</th>
+                    <th>CPRE_WIRSUNG</th>
+                    <th>CPRE_PRECORTE</th>
+                    <th>CPRE_Dilatacion_biliar</th>
+                    <th>CPRE_Litotripsia</th>
+                    <th>CPRE_stent_plastico</th>
+                    <th>CPRE_stent_autoex</th>
+                    <th>cirugia_prev</th>
+                    <th>coledocolitiasis</th>
+                    <th>complicaciones</th>
+                    <th>diverticulo</th>
+                    <th>eco_abd</th>
+                    <th>estenosis_alta</th>
+                    <th>estenosis_baja</th>
+                    <th>eus</th>
+                    <th>grado_asge</th>
+                    <th>grado_dif</th>
+                    <th>indicacion</th>
+                    <th>indicacion_asge</th>
+                    <th>indicacion_ept</th>
+                    <th>lpqvb</th>
+                    <th>miscelaneas</th>
+                    <th>profilaxis_atb</th>
+                    <th>resolucion_complica</th>
+                    <th>rnm</th>
+                    <th>tac</th>
+                    <th>terap_pancreas</th>
+                    <th>transk</th>
+
+            </thead>
+            <tbody>
+                {% for fila in datos %}
+                <tr>
+                    <td>{{fila.fecha}}</td>
+                    <td>{{fila.nombre}}</td>
+                    <td>{{fila.nacimiento}}</td>
+                    <td>{{fila.edad}}</td>
+                    <td>{{fila.fecha}}</td>
+                    <td>{{fila.nombre}}</td>
+                    <td>{{fila.nacimiento}}</td>
+                    <td>{{fila.edad}}</td>
+                    <td>{{fila.ASA}}</td>
+                    <td>{{fila.ambulatorio}}</td>
+                    <td>{{fila.cpre_previa}}</td>
+                    <td>{{fila.BILIRRUBINA}}</td>
+                    <td>{{fila.FAL}}</td>
+                    <td>{{fila.TGP}}</td>
+                    <td>{{fila.TGO}}</td>
+                    <td>{{fila.AMILASA}}</td>
+                    <td>{{fila.GGT}}</td>
+                    <td>{{fila.GB}}</td>
+                    <td>{{fila.FR_DE_PA_SOD}}</td>
+                    <td>{{fila.FR_DE_PA_AUSENCIA_PC}}</td>
+                    <td>{{fila.FR_DE_PA_ANTEC_PA}}</td>
+                    <td>{{fila.CPRE_normal}}</td>
+                    <td>{{fila.ESFINTEROPLASTIA}}</td>
+                    <td>{{fila.stent_duodenal}}</td>
+                    <td>{{fila.RX_dosis}}</td>
+                    <td>{{fila.DPA}}</td>
+                    <td>{{fila.RX_tiempo}}</td>
+                    <td>{{fila.nro_sesiones}}</td>
+                    <td>{{fila.resolucion_completa}}</td>
+                    <td>{{fila.canulacion}}</td>
+                    <td>{{fila.biopsias}}</td>
+                    <td>{{fila.citologia}}</td>
+                    <td>{{fila.fracaso}}</td>
+                    <td>{{fila.comentarios}}</td>
+                    <td>{{fila.embarazo}}</td>
+                    <td>{{fila.fecha}}</td>
+                    <td>{{fila.hospital_derivacion}}</td>
+                    <td>{{fila.CPRE_WIRSUNG}}</td>
+                    <td>{{fila.CPRE_PRECORTE}}</td>
+                    <td>{{fila.CPRE_Dilatacion_biliar}}</td>
+                    <td>{{fila.CPRE_Litotripsia}}</td>
+                    <td>{{fila.CPRE_stent_plastico}}</td>
+                    <td>{{fila.CPRE_stent_autoex}}</td>
+                    <td>{{fila.cirugia_prev}}</td>
+                    <td>{{fila.coledocolitiasis}}</td>
+                    <td>{{fila.complicaciones}}</td>
+                    <td>{{fila.diverticulo}}</td>
+                    <td>{{fila.eco_abd}}</td>
+                    <td>{{fila.estenosis_alta}}</td>
+                    <td>{{fila.estenosis_baja}}</td>
+                    <td>{{fila.eus}}</td>
+                    <td>{{fila.CPRE_grado_asge}}</td>
+                    <td>{{fila.CPRE_grado_dif}}</td>
+                    <td>{{fila.indicacion}}</td>
+                    <td>{{fila.indicacion_asge}}</td>
+                    <td>{{fila.indicacion_ept}}</td>
+                    <td>{{fila.lpqvb}}</td>
+                    <td>{{fila.miscelaneas}}</td>
+                    <td>{{fila.profilaxis_atb}}</td>
+                    <td>{{fila.resolucion_complica}}</td>
+                    <td>{{fila.rnm}}</td>
+                    <td>{{fila.tac}}</td>
+                    <td>{{fila.terap_pancreas}}</td>
+                    <td>{{fila.transk}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a id="downloadLink" class="btn btn-secondary btn-sm active"
+        onclick="exportF(this,'mainTable', 'Reporte CPRE' )">Exportar Excel</a>
+</div>
+<script>
+    function exportF(elem, tableId, xlsName) {
+        var table = document.getElementById(tableId);
+        var html = table.outerHTML;
+        var url = 'data:application/vnd.ms-excel,' + escape(html);
+        elem.setAttribute("href", url);
+        elem.setAttribute("download", xlsName);
+        return false;
+    }
+</script>
+{% endif %}
+{% endblock %}

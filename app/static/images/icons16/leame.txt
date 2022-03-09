@@ -1,0 +1,9 @@
+Los archivos de iconos en este directorio no se acceden directamente desde la aplicación
+(de hecho podrían no estar en el servidor de producción). 
+Se utiliza ImageMagick para pegarlos todos juntos y generar el CSS Sprite icons16.png que
+está en el directorio de imágenes y es el que se usa en la aplicación. 
+
+Para generar el sprite, una vez instalado ImageMagic, ejecutar: 
+
+convert 0* +append ..\icons16.png
+

@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if modo=="form" %}
+<div class="conteiner">
+
+    <div class="container justify-content-center d-flex">
+        <div class="card-body p-5 text-center col-md-8">
+            <div class="mb-md-5 mt-md-6">
+                <h1 class="h-100"> Reporte completo HEPA</h1>
+                <form action="{{ url_for('repo_hepaCompleto') }}" method="POST" enctype=multipart/form-data>
+                    <div class="form-outline form-white mb-6">
+                        <input class="form-control" name="desde" type=date id="desde" value="{{desde}}" />
+                    </div>
+                    <div class="form-outline form-white mb-6">
+                        <input class="form-control" name="hasta" type=date id="hasta" value="{{hasta}}" />
+                    </div>
+                    <input class="btn btn-primary ms-1" type="submit" value="Generar">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if modo=="reporte" %}
+<div class="conteiner" id="prueba">
+    <h1> Reporte completo de Hepa</h1>
+    <div class="table-responsive">
+        <table class="table table-striped " id="mainTable">
+            <thead>
+                <tr>
+                    <th>Fecha HEPA</th>
+                    <th>Nombre</th>
+                    <th>Activo</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Edad</th>
+                    <th>consultorio</th>
+                    <th>etiologias</th>
+                    <th>descompensación</th>
+                    <th>cirrosis-etiologia</th>
+                    <th>Hepatocarcinoma</th>
+                    <th>Lesion Focal Hepatica</th>
+                    <th>MELD</th>
+                    <th>child pugh</th>
+            </thead>
+            <tbody>
+                {% for fila in datos %}
+                <tr>
+                    <td>{{fila.fecha}}</td>
+                    <td>{{fila.nombre}}</td>
+                    <td>{{fila.activa}}</td>
+                    <td>{{fila.nacimiento}}</td>
+                    <td>{{fila.edad}}</td>
+                    <td>{{fila.consultorio}}</td>
+                    <td>{{fila.etiologia}}</td>
+                    <td>{{fila.hepa_descompensacion}}</td>
+                    <td>{{fila.cirrosis_etiologia}}</td>
+                    <td>{{fila.hepatocarcinoma}}</td>
+                    <td>{{fila.lesion_focal_hepatica}}</td>
+                    <td>{{fila.meld}}</td>
+                    <td>{{fila.hepa_child_pugh}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a id="downloadLink" class="btn btn-secondary btn-sm active"
+        onclick="exportF(this,'mainTable', 'Reporte VEDA' )">Exportar Excel</a>
+</div>
+<script>
+    function exportF(elem, tableId, xlsName) {
+        var table = document.getElementById(tableId);
+        var html = table.outerHTML;
+        var url = 'data:application/vnd.ms-excel,' + escape(html);
+        elem.setAttribute("href", url);
+        elem.setAttribute("download", xlsName);
+        return false;
+    }
+</script>
+{% endif %}
+{% endblock %}

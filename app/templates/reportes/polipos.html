@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<div class="conteiner">
+    <h1>porcentaje de rangos en polipos por pacientes</h1>
+    <table class="table table-striped " id="mainTable">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>rango 1</th>
+                <th>rango 2</th>
+                <th>rango 3</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td> Nompre paciente</td>
+                <td> un % </td>
+                <td> un % </td>
+                <td> un % </td>
+            </tr>
+            <tr>
+                <td> Nompre paciente</td>
+                <td> un % </td>
+                <td> un % </td>
+                <td> un % </td>
+            </tr>
+            <tr>
+                <td> Nompre paciente</td>
+                <td> un % </td>
+                <td> un % </td>
+                <td> un % </td>
+            </tr>
+        </tbody>
+    </table>
+    <a id="downloadLink" class="btn btn-secondary btn-sm active" onclick="exportF(this,'mainTable', 'Reporte Pólipos' )">Exportar Excel</a>
+</div>
+<script>
+    function exportF(elem, tableId, xlsName) {
+     var table = document.getElementById(tableId);
+     var html = table.outerHTML;
+     var url = 'data:application/vnd.ms-excel,' + escape(html);
+     elem.setAttribute("href", url);
+     elem.setAttribute("download", xlsName);
+     return false;
+   }
+</script>    
+{% endblock %}

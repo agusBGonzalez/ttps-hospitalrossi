@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if form_action=="delete" %}
+    {%    set titulo_form = "Eliminar Evento CPRE" %}
+    {%    set mensaje_del = "Atención: se va a eliminar el evento de tipo CPRE" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Eliminar" %}
+    {%    set url_form = url_for('cpre_delete') %}
+{% elif form_action=="new" %}
+    {%    set titulo_form = "Nuevo Evento CPRE" %}
+    {%    set ro = "readonly" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('cpre_create') %}
+{% else %}
+    {%    set titulo_form = "Editar Evento CPRE" %}
+    {%    set titulo_del = "" %}
+    {%    set mensaje_del = "" %}
+    {%    set ro = "" %}
+    {%    set lbl_boton = "Guardar" %}
+    {%    set url_form = url_for('cpre_modify') %}
+{% endif %}
+{% macro in_select_single(campoEvento, valores, descrip, label='', nullable=1) -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" id="estudioIncompleto"><b>{{ label }}</b></span>
+    <select class="form-select" name="{{campoEvento}}">
+        {% if nullable==1 %}
+        <option value="0" {% if cpre[campoEvento]==None %} selected="selected" {% endif %}> </option>
+        {% endif %}
+        {% for elem in valores  %}
+            <option value="{{ elem.id }}" {% if elem.id == cpre[campoEvento] %} selected="selected" {% endif %}>{{elem[descrip]}}</option>
+        {% endfor %}            
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_select_multi(campoEvento, valores, valores_actuales, descrip_field, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <select class="form-select" name="{{campoEvento}}" id="{{campoEvento}}" multiple>
+        {% for elem in valores %}
+            {% if elem in valores_actuales %}
+            {%  set chk='selected' %}
+            {% else %}
+            {%  set chk='' %}
+            {% endif %}            
+            <option value="{{ elem.id }}" {{chk}}>{{elem[descrip_field]}}</option>
+        {% endfor %}
+    </select>
+</div>
+{%- endmacro %}
+{% macro in_boolean(campoEvento, label='') -%}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <div class="form-check">
+        <label class="form-check-label" >
+        <input  type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="1" {% if cpre[campoEvento] %}checked{% endif %}>
+          Si
+        </label>
+      </div>
+      <div class="form-check">
+        <label class="form-check-label" >
+        <input type="radio" name="{{campoEvento}}" id="{{campoEvento}}" value="0" {% if not cpre[campoEvento] %}checked{% endif %}>
+          No
+        </label>
+      </div>
+</div>
+{%- endmacro %}
+{% macro in_string(campoEvento, label='', required=0) -%}
+{% if required==1 %}
+{%    set req = 'required' %}
+{% else %}
+{%    set req = '' %}
+{% endif %}
+{% set valor = cpre[campoEvento] %}
+{% if valor == None %}
+{%  set valor = '' %}
+{% endif %}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background"><b>{{label}}</b></span>
+    <input type="text" name="{{campoEvento}}" class="form-control input-forms" value="{{ valor }}" {{req}}>
+</div>
+{%- endmacro %}
+{% macro in_int(campoEvento, label='', required=0, max=99999999, min=-99999) -%}
+{% if required==1 %}
+{%    set req = 'required' %}
+{% else %}
+{%    set req = '' %}
+{% endif %}
+{% set valor = cpre[campoEvento] %}
+{% if valor == None %}
+{% set valor = '' %}
+{% endif %}
+<div class="input-group mb-3">
+    <span class="input-group-text bg-background" ><b>{{label}}</b></span>
+    <input type="number" name="{{campoEvento}}" class="form-control input-forms" value="{{valor}}" {{req}} min={{min}} max={{max}}>
+</div>
+{%- endmacro %}
+<div>
+    <h1>Cargar datos de Cpre</h1>
+    <form action="{{ url_form }}" method="POST" enctype=multipart/form-data>
+    <div class="input-group mb-3">
+        <input type="hidden" name="id_historia" value="{{ cpre.id_historia }}">
+        <input type="hidden" name="id" value="{{ cpre.id }}">
+        <span class="input-group-text bg-background"><b>Fecha:</b></span><input name="fecha" type=date  id="fecha" value="{{ cpre.fecha }}"/>
+    </div>
+<!-- color amarillo -->
+    {{ in_int(campoEvento='ASA', label='ASA', required=0, min=0, max=4) }}
+    {{ in_boolean(campoEvento='ambulatorio', label='Ambulatorio') }}
+    {{ in_select_multi(campoEvento='indicacion_asge_list', valores=indicacion_asge, valores_actuales=indicacion_asge_list, descrip_field='descripcion', label='Indicacion ASGE') }}
+    {{ in_select_multi(campoEvento='indicacion_list', valores=indicacion, valores_actuales=indicacion_list, descrip_field='descripcion', label='Indicaciones') }}
+    {{ in_boolean(campoEvento='cpre_previa', label='CPRE Previa') }}
+    {{ in_select_multi(campoEvento='cirugia_prev_list', valores=cirugia_prev, valores_actuales=cirugia_prev_list, descrip_field='descripcion', label='Cirugias previas') }}
+    {{ in_string(campoEvento='hospital_derivacion', label='hospital_derivacion', required=0) }}
+    {{ in_string(campoEvento='BILIRRUBINA', label='BILIRRUBINA', required=0) }}
+    {{ in_string(campoEvento='FAL', label='FAL', required=0) }}
+    {{ in_string(campoEvento='TGP', label='TGP', required=0) }}
+    {{ in_string(campoEvento='TGO', label='TGO', required=0) }}
+    {{ in_string(campoEvento='AMILASA', label='AMILASA', required=0) }}
+    {{ in_string(campoEvento='GGT', label='GGT', required=0) }}
+    {{ in_string(campoEvento='GB', label='GB', required=0) }}
+    {{ in_select_multi(campoEvento='eco_abd_list', valores=eco_abd, valores_actuales=eco_abd_list, descrip_field='descripcion', label='Eco Abd') }}
+    {{ in_select_multi(campoEvento='tac_list', valores=tac, valores_actuales=tac_list, descrip_field='descripcion', label='tac') }}
+    {{ in_select_multi(campoEvento='rnm_list', valores=rnm, valores_actuales=rnm_list, descrip_field='descripcion', label='rnm') }}
+    {{ in_select_multi(campoEvento='eus_list', valores=eus, valores_actuales=eus_list, descrip_field='descripcion', label='EUS') }}
+    {{ in_select_multi(campoEvento='transk_list', valores=transk, valores_actuales=transk_list, descrip_field='descripcion', label='Transk') }}
+   
+    {{ in_select_single(campoEvento='id_cpre_grado_asge', valores=grado_asge, descrip='descripcion', label='Grado ASGE', nullable=1) }}
+    {{ in_select_single(campoEvento='id_cpre_grado_dif', valores=grado_dif, descrip='descripcion', label='Grado Dif', nullable=1) }}
+   
+    {{ in_select_single(campoEvento='id_operador', valores=operadores, descrip='username', label='Operador', nullable=1) }}
+    {{ in_boolean(campoEvento='FR_DE_PA_SOD', label='FR DE PA SOD') }}
+    {{ in_boolean(campoEvento='FR_DE_PA_AUSENCIA_PC', label='FR DE PA AUSENCIA PC') }}
+    {{ in_boolean(campoEvento='FR_DE_PA_ANTEC_PA', label='FR DE PA ANTEC PA') }}
+    {{ in_select_multi(campoEvento='profilaxis_atb_list', valores=profilaxis_atb, valores_actuales=profilaxis_atb_list, descrip_field='descripcion', label='Profilaxis ATB') }}
+<!-- Color naranja -->
+    {{ in_boolean(campoEvento='CPRE_normal', label='CPRE Normal') }}
+    {{ in_select_multi(campoEvento='coledocolitiasis_list', valores=coledocolitiasis, valores_actuales=coledocolitiasis_list, descrip_field='descripcion', label='Coledocolitiasis') }}
+    {{ in_select_multi(campoEvento='diverticulo_list', valores=diverticulo, valores_actuales=diverticulo_list, descrip_field='descripcion', label='Diverticulos') }}
+    {{ in_select_multi(campoEvento='lpqvb_list', valores=lpqvb, valores_actuales=lpqvb_list, descrip_field='descripcion', label='lpqvb') }}
+    {{ in_select_multi(campoEvento='estenosis_baja_list', valores=estenosis_baja, valores_actuales=estenosis_baja_list, descrip_field='descripcion', label='estenosis baja') }}
+    {{ in_select_multi(campoEvento='estenosis_alta_list', valores=estenosis_alta, valores_actuales=estenosis_alta_list, descrip_field='descripcion', label='Estenosis alta') }}
+    {{ in_select_multi(campoEvento='miscelaneas_list', valores=miscelaneas, valores_actuales=miscelaneas_list, descrip_field='descripcion', label='Miscelaneas') }}
+    {{ in_select_multi(campoEvento='terap_pancreas_list', valores=terap_pancreas, valores_actuales=terap_pancreas_list, descrip_field='descripcion', label='Terapia Pancreas') }}
+    {{ in_select_single(campoEvento='id_CPRE_EPT', valores=ept, descrip='descripcion', label='EPT', nullable=1) }}
+    {{ in_select_multi(campoEvento='indicacion_ept_list', valores=indicacion_ept, valores_actuales=indicacion_ept_list, descrip_field='descripcion', label='Indicaciones EPT') }}
+    {{ in_boolean(campoEvento='ESFINTEROPLASTIA', label='ESFINTEROPLASTIA') }}
+    {{ in_select_single(campoEvento='id_CPRE_WIRSUNG', valores=wirsung, descrip='descripcion', label='WIRSUNG', nullable=1) }}
+    {{ in_select_single(campoEvento='id_CPRE_PRECORTE', valores=precorte, descrip='descripcion', label='PRECORTE', nullable=1) }}
+    {{ in_select_single(campoEvento='id_CPRE_Dilatacion_biliar', valores=dilatacion_biliar, descrip='descripcion', label='Dilatacion biliar', nullable=1) }}
+    {{ in_select_single(campoEvento='id_CPRE_Litotripsia', valores=litotripsia, descrip='descripcion', label='Litotripsia', nullable=1) }}
+    {{ in_select_single(campoEvento='id_CPRE_stent_plastico', valores=stent_plastico, descrip='descripcion', label='Stent Plastico', nullable=1) }}
+    {{ in_select_single(campoEvento='id_CPRE_stent_autoexp', valores=stent_autoexp, descrip='descripcion', label='Stent Autoexpandible', nullable=1) }}
+    {{ in_boolean(campoEvento='stent_duodenal', label='Stent Duodenal') }}
+
+<!-- color verde -->
+    {{ in_string(campoEvento='RX_dosis', label='RX_dosis', required=0) }}
+    {{ in_string(campoEvento='DPA', label='DPA', required=0) }}
+    {{ in_string(campoEvento='RX_tiempo', label='RX tiempo', required=0) }}
+    {{ in_int(campoEvento='nro_sesiones', label='Nro sesiones', required=0, min=0) }}
+    {{ in_select_multi(campoEvento='resolucion_complica_list', valores=resolucion_complica, valores_actuales=resolucion_complica_list, descrip_field='descripcion', label='Resolucion complicaciones') }}
+    {{ in_select_single(campoEvento='id_CPRE_AMILASEMIA_2HS', valores=amilasemia_2hs, descrip='descripcion', label='AMILASEMIA 2HS', nullable=1) }}
+    {{ in_boolean(campoEvento='canulacion', label='Canulacion') }}
+    {{ in_boolean(campoEvento='biopsias', label='Biopsias') }}
+    {{ in_string(campoEvento='citologia', label='citologia', required=0) }}
+    {{ in_select_multi(campoEvento='complicaciones_list', valores=complicaciones, valores_actuales=complicaciones_list, descrip_field='descripcion', label='Complicaciones') }}
+    {{ in_boolean(campoEvento='resolucion_completa', label='Resolucion Complicacion') }} 
+    {{ in_boolean(campoEvento='fracaso', label='Fracaso') }}
+    {{ in_string(campoEvento='comentarios', label='Comentarios', required=1) }}
+    {{ in_boolean(campoEvento='embarazo', label='Embarazo') }}
+   
+   
+
+
+
+
+
+ 
+
+
+
+    <input type="submit" class="btn btn-secondary btn-sm" value="{{lbl_boton}}">
+    <a href="{{ url_for('historia_edit',id=cpre.id_historia) }}" class="btn btn-secondary btn-sm">Volver</a>
+    </form>
+</div>
+{% endblock %}

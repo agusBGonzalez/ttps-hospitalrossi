@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+{% if modo=="form" %}
+<div class="conteiner">    
+    <div class="container justify-content-center d-flex">
+        <div class="card-body p-5 text-center col-md-8">
+            <div class="mb-md-5 mt-md-6">
+                <h1 class="h-100"> Reporte VCC - Pólipos por paciente</h1>
+                <form action="{{ url_for('vccPoliposPac') }}" method="POST" enctype=multipart/form-data>
+                    <div class="form-outline form-white mb-6">
+                        <input class="form-control" name="desde" type=date id="desde" value="{{desde}}" />
+                    </div>
+                    <div class="form-outline form-white mb-6">
+                        <input class="form-control" name="hasta" type=date id="hasta" value="{{hasta}}" />
+                    </div>
+                    <input class="btn btn-primary ms-1" type="submit" value="Generar">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if modo=="reporte" %}
+<div class="conteiner">
+    <h1> Reporte VCC - Pólipos por paciente</h1>
+    <table class="table table-striped " id="mainTable">
+        <thead>
+            <tr>
+                <th>Fecha VCC</th>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Comentarios</th>
+                <th>Tamaño</th>
+        </thead>
+        <tbody>
+            {% for fila in datos  %}
+            <tr>
+                <th>{{fila.fecha}}</th>
+                <th>{{fila.nombre}}</th>
+                <th>{{fila.edad}}</th>
+                <th>{{fila.comentarios}}</th>
+                <th>{{fila.tam}}</th>
+            </tr>
+            {% endfor %}            
+        </tbody>
+    </table>
+    <a id="downloadLink" class="btn btn-secondary btn-sm active" onclick="exportF(this,'mainTable', 'Pólipos por paciente' )">Exportar Excel</a>
+</div>
+<script>
+    function exportF(elem, tableId, xlsName) {
+     var table = document.getElementById(tableId);
+     var html = table.outerHTML;
+     var url = 'data:application/vnd.ms-excel,' + escape(html);
+     elem.setAttribute("href", url);
+     elem.setAttribute("download", xlsName);
+     return false;
+   }
+</script> 
+{% endif %}
+{% endblock %}

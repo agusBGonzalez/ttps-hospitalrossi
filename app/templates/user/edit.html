@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}Usuarios{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+  {% if user is defined %}
+  <h1>Datos de usuario</h1>
+    {% if user_action=="delete" %}
+      <p>
+        <label>Atención: al confirmar se eliminará el siguiente usuario y todas sus relaciones con los roles</label>
+      </p>
+      <form action="{{ url_for('user_delete') }}" method="POST">
+        <input type="hidden" name="id" value="{{ user.id }}">
+        <p>
+          <label>Username</label>
+          <input name="username" placeholder="Username" value="{{ user.username }}" readonly/>
+        </p>
+        <p>
+          <label>Email</label>
+          <input name="email" placeholder="Correo" value="{{ user.email }}"/>
+        </p>
+        <p>
+          <label>Clave</label>
+          <input type="password" name="password" placeholder="Clave" value="{{ user.password }}" readonly/>
+        </p>
+        <p>
+          <label>Nombre</label>
+          <input name="first_name" placeholder="Nombre" value="{{ user.first_name }}" readonly/>
+        </p>
+        <p>
+          <label>Apellido</label>
+          <input name="last_name" placeholder="Apellido" value="{{ user.last_name }}" readonly/>
+        </p>
+        <p>
+          <input type="submit" value="Eliminar" class="btn btn-secondary btn-sm">
+          <a href="{{ url_for('user_index') }}" class="btn btn-secondary btn-sm">Volver</a>
+        </p>
+      </form>
+    {% else %}
+    <form action="{{ url_for('user_modify') }}" method="POST">
+      <input type="hidden" name="id" value="{{ user.id }}">
+      <input type="hidden" name="userAction" value="{{ user_action }}">
+      <p>
+        <label>Username</label>
+        <input name="username" placeholder="Username" value="{{ user.username }}"
+        {% if user_action=="perfil" %} disabled {% endif %}/>
+      </p>
+      <p>
+        <label>Email</label>
+        <input name="email" placeholder="Correo" value="{{ user.email }}"/>
+      </p>
+      <p>
+        <label>Clave</label>
+        <input type="password" name="password" placeholder="Clave" value="{{ user.password }}"/>
+      </p>
+      <p>
+        <label>Nombre</label>
+        <input name="first_name" placeholder="Nombre" value="{{ user.first_name }}"/>
+      </p>
+      <p>
+        <label>Apellido</label>
+        <input name="last_name" placeholder="Apellido" value="{{ user.last_name }}"/>
+      </p>
+      <p>
+        <input type="checkbox" name="activo" {% if (user.activo) %} checked {% endif %} value="1"
+        {% if user_action=="perfil" %} disabled {% endif %}/>Activo
+      </p>      
+      <p>
+        <input type="submit" class="btn btn-secondary btn-sm" value="Guardar">
+        {% if user_action=="edit" %}
+        <a href="{{ url_for('user_index') }}" class="btn btn-secondary btn-sm">Volver</a>
+        {% else %}
+        <a href="{{ url_for('home') }}" class="btn btn-secondary btn-sm">Cerrar</a>
+        {% endif %}
+      </p>
+    </form>
+    {% endif %}
+    {% else %}
+  <a href="{{ url_for('user_index') }}" class="btn btn-secondary btn-sm">Volver</a>
+  {% endif %}
+{% endblock %}

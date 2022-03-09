@@ -1,0 +1,81 @@
+{% extends "layout.html" %} {% block title %}Usuarios{% endblock %} {% block head %} {{ super() }} {% endblock %} {%
+block content %}
+
+<dic class="conteiner">
+    
+    <div class="d-flex justify-content-between">
+        <h1>Gestion de pacientes</h1>
+        <div>
+            <div class="btn-group" role="group">
+                <!--  <button type="button" class="btn btn-secondary btn-sm " data-toggle="modal" data-target="{{ url_for('historia_new')}}"> -->
+                    <a href="{{ url_for('historia_new')}}" class="btn btn-secondary btn-sm">Agregar Paciente</a>
+                </button>
+            </div>
+        </div>
+    </div>
+    <form action="{{ url_for('historia_browse') }}" method="POST" enctype=multipart/form-data>
+        <div class="input-group">
+            <select class="form-select form-sm" id="inputGroupSelect01" name="activos">
+                
+                <option value="A" {% if activos=='A' %}selected{% endif %}>Activos</option>
+                <option value="I" {% if activos=='I' %}selected{% endif %}>Inactivos</option>
+                <option value="T" {% if activos=='T' %}selected{% endif %}>Todos</option>
+            </select>
+            <input type="text" class="form-control" placeholder="Buscar Nombre" name="busqueda_nombre" value={{ busqueda_nombre }} >
+            <button type="submit" class="btn btn-background"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+    <table class="table table-striped ">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>DNI</th>
+                <th>SEXO</th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for historia in historias %}
+            <tr>
+                <td> {{historia.nombre}} </td>
+                <td> {{historia.edad}} </td>
+                <td> {{historia.dni}} </td>
+                <td> {{historia.sexo.descripcion}} </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Acciones
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ url_for('historia_edit', id=historia.id) }}">Ver</a>
+                            <a class="dropdown-item" href="{{ url_for('historia_edit_estado', id=historia.id) }}">
+                                {% if historia.activa %}
+                                    desactivar
+                                {% else %}
+                                    activar
+                                {% endif %}
+                            </a> 
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+    <p>
+        {% if (previa != 0) %}
+          <a href="{{ url_for('historia_pagina', pagina=previa ) }}" class="btn btn-primary btn-sm">Prev</a>
+        {% endif %}
+        {% if (proxima != 0) %}
+          <a href="{{ url_for('historia_pagina', pagina=proxima ) }}" class="btn btn-primary btn-sm">Prox</a>
+        {% endif %}
+    </p>
+    </div>
+</dic>
+
+{% endblock %}
